@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { Input, Select, Button } from "antd";
+import { Input, Select } from "antd";
+import LoginAvatar from "./LoginAvatar";
 const { Option } = Select;
 const { Search } = Input;
 
-export default function NavHeader() {
+export default function NavHeader(props) {
     return (
         <div className="headerContainer">
             {/* logo */}
@@ -44,7 +45,7 @@ export default function NavHeader() {
             </div>
             {/* 登录注册 */}
             <div className="loginBtnContainer">
-                <Button type="primary">注册/登录</Button>
+                <LoginAvatar loginHandle={props.loginHandle} />
             </div>
         </div>
     );

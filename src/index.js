@@ -1,16 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { BrowserRouter } from "react-router-dom";
+
 import "antd/dist/antd.min.css";
 import zhCN from 'antd/es/locale/zh_CN';
 import { ConfigProvider } from 'antd';
 
+import { BrowserRouter } from "react-router-dom";
+
+import store from "./redux/store";
+import { Provider } from "react-redux";
+
+import "./index.css";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <BrowserRouter>
-        <ConfigProvider locale={zhCN}>
-            <App />
-        </ConfigProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+        <BrowserRouter
+            future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true
+            }}
+        >
+            <ConfigProvider locale={zhCN}>
+                <App />
+            </ConfigProvider>
+        </BrowserRouter>
+    </Provider>
 );
