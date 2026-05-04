@@ -7,6 +7,7 @@ const Books = lazy(() => import("../pages/Books"));
 const Interviews = lazy(() => import("../pages/Interviews"));
 const AddIssue = lazy(() => import("../pages/AddIssue"));
 const IssueDetail = lazy(() => import("../pages/IssueDetail"));
+const SearchPage = lazy(() => import("../pages/SearchPage"));
 
 const routes = [
     {
@@ -32,6 +33,10 @@ const routes = [
     {
         path: "/interviews",
         element: <Interviews />
+    },
+    {
+        path: "/searchPage",
+        element: <SearchPage />
     }
 ];
 
