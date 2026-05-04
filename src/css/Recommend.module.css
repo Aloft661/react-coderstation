@@ -1,7 +1,12 @@
 .contentStyle {
     display: block;
     height: 130px;
-    color: #fff;
-    line-height: 160px;
-    text-align: center;
+    overflow: hidden;
+}
+
+.carouselImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

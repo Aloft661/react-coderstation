@@ -5,6 +5,8 @@ import { Spin } from "antd";
 const Issues = lazy(() => import("../pages/Issues"));
 const Books = lazy(() => import("../pages/Books"));
 const Interviews = lazy(() => import("../pages/Interviews"));
+const AddIssue = lazy(() => import("../pages/AddIssue"));
+const IssueDetail = lazy(() => import("../pages/IssueDetail"));
 
 const routes = [
     {
@@ -14,6 +16,14 @@ const routes = [
     {
         path: "/issues",
         element: <Issues />,
+    },
+    {
+        path: "/issue/:id",
+        element: <IssueDetail />
+    },
+    {
+        path: "/addIssue",
+        element: <AddIssue />
     },
     {
         path: "/books",

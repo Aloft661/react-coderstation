@@ -70,6 +70,10 @@
     font-size: 16px;
 }
 
+.content img {
+    max-width: 100%;
+}
+
 .rightSide {
     width: 28%;
     height: 100%;
