@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { formatDate } from "../utils/tools";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { formatDate } from "../utils/tools";
 import { getTypeList } from "../redux/typeSlice";
 import { Tag } from "antd";
 import { getUserById } from "../api/user";
@@ -13,6 +14,8 @@ export default function IssueItem(props) {
     const [userInfo, setUserInfo] = useState({});
     const dispatch = useDispatch();
     const colorArr = ["#108ee9", "#2db7f5", "#f50", "green", "#87d068", "blue", "red", "purple"];
+
+    const navigate = useNavigate();
     useEffect(() => {
         if (!typeList.length) {
             dispatch(getTypeList());
@@ -41,7 +44,7 @@ export default function IssueItem(props) {
             </div>
             {/* 问题内容 */}
             <div className={styles.issueContainer}>
-                <div className={styles.top}>{props.issueInfo.issueTitle}</div>
+                <div className={styles.top} onClick={() => navigate(`/issue/${props.issueInfo._id}`)}>{props.issueInfo.issueTitle}</div>
                 <div className={styles.bottom}>
                     <div className={styles.left}>
                         <Tag color={colorArr[typeList.indexOf(type) % colorArr.length]}>{type?.typeName}</Tag>

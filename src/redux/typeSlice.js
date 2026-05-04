@@ -17,10 +17,10 @@ const typeSlice = createSlice({
     reducers: {
         
     },
-    extraReducers: {
-        [getTypeList.fulfilled]: (state, { payload }) => {
+    extraReducers: (builder) => {   
+        builder.addCase(getTypeList.fulfilled, (state, { payload }) => {
             state.typeList = payload;
-        }
+        });
     }
 });
 
