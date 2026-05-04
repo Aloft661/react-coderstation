@@ -8,3 +8,12 @@ export function getIssueCommentById(id, params) {
         params,
     });
 }
+
+// 提交评论
+export function addComment(data) {
+    return request({
+        url: "/api/comment",
+        method: "POST",
+        data
+    });
+}

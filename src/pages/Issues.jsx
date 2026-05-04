@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+
 import PageHeader from "../components/PageHeader";
 import IssueItem from "../components/IssueItem";
 import AddIssueBtn from "../components/AddIssueBtn";
 import Recommend from "../components/Recommend";
 import ScoreRank from "../components/ScoreRank";
-import { getIssueByPage } from "../api/issue";
+import TypeSelect from "../components/TypeSelect";
 import { Pagination } from "antd";
+
+import { getIssueByPage } from "../api/issue";
 
 import styles from "../css/Issue.module.css";
 
@@ -18,6 +22,7 @@ export default function Issues() {
         pageSize: 15,
         total: 0,
     });
+    const { issueTypeId } = useSelector(state => state.type);
 
     // 处理翻页的回调函数
     function handlePageChange(current, pageSize) {
@@ -29,11 +34,16 @@ export default function Issues() {
 
     useEffect(() => {
         async function fetchData() {
-            const { data } = await getIssueByPage({
+            let searchParams = {
                 current: pageInfo.current,
                 pageSize: pageInfo.pageSize,
                 issueStatus: true
-            });
+            };
+            if (issueTypeId !== "all") {
+                searchParams.typeId = issueTypeId;
+                searchParams.current = 1;
+            }
+            const { data } = await getIssueByPage(searchParams);
             setIssueInfo(data.data);
             setPageInfo({
                 current: data.currentPage,
@@ -42,7 +52,7 @@ export default function Issues() {
             });
         }
         fetchData();
-    }, [pageInfo.current, pageInfo.pageSize]);
+    }, [pageInfo.current, pageInfo.pageSize, issueTypeId]);
 
     let issueList = [];
     for (let i = 0; i < issueInfo.length; i++) {
@@ -51,22 +61,31 @@ export default function Issues() {
 
     return (
         <div className={styles.container}>
-            <PageHeader title="问答列表" />
+            <PageHeader title="问答列表">
+                <TypeSelect />
+            </PageHeader>
             <div className={styles.issueContainer}>
                 {/* 左边 */}
                 <div className={styles.leftSide}>
                     {issueList}
-                    <div className="paginationContainer">
-                        <Pagination
-                            showQuickJumper
-                            defaultCurrent={1}
-                            total={pageInfo.total}
-                            {...pageInfo}
-                            onChange={handlePageChange}
-                            pageSizeOptions={["5", "10", "15", "20"]}
-                            showSizeChanger
-                        />
-                    </div>
+                    {
+                        issueInfo.length > 0 ? (// 三目运算
+                            <div className="paginationContainer">
+                                <Pagination
+                                    showQuickJumper
+                                    defaultCurrent={1}
+                                    total={pageInfo.total}
+                                    {...pageInfo}
+                                    onChange={handlePageChange}
+                                    pageSizeOptions={["5", "10", "15", "20"]}
+                                    showSizeChanger
+                                />
+                            </div>
+                        ) : (
+                            <div className={styles.noIssue}>有问题，就来 Corder Station</div>
+                        )
+                    }
+
 
                 </div>
                 {/* 右边 */}

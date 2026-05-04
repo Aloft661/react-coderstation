@@ -1,10 +1,33 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Input, Select } from "antd";
 import LoginAvatar from "./LoginAvatar";
+
 const { Option } = Select;
 const { Search } = Input;
 
 export default function NavHeader(props) {
+    const navigate = useNavigate();
+    const [searchOption, setSearchOption] = useState("issue");
+
+    function onSearch(value) {
+        if (value) {
+            // 搜索框有内容
+            navigate("/searchPage", {
+                state: {
+                    value,
+                    searchOption
+                }
+            });
+        } else {
+            navigate("/");
+        }
+    }
+
+    function onChange(val) {
+        setSearchOption(val);
+    }
+
     return (
         <div className="headerContainer">
             {/* logo */}
@@ -28,7 +51,7 @@ export default function NavHeader(props) {
             {/* 搜索栏 */}
             <div className="searchContainer">
                 <Input.Group compact>
-                    <Select defaultValue="issue" size="large" style={{width: "20%"}}>
+                    <Select defaultValue="issue" size="large" style={{width: "20%"}} onChange={onChange}>
                         <Option value="issue">问答</Option>
                         <Option value="book">书籍</Option>
                     </Select>
@@ -40,6 +63,7 @@ export default function NavHeader(props) {
                         allowClear
                         enterButton="搜索"
                         size="large"
+                        onSearch={onSearch}
                     />
                 </Input.Group>
             </div>

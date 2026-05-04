@@ -57,3 +57,12 @@ export function getUserByPointsRank() {
         method: "GET"
     });
 }
+
+// 根据id修改用户
+export function editUser(id, data) {
+    return request({
+        url: `/api/user/${id}`,
+        method: "PATCH",
+        data
+    });
+}
