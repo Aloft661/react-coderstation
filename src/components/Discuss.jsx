@@ -1,16 +1,17 @@
 import { useRef, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Comment, Avatar, Form, Button, List, Tooltip, Pagination, message } from "antd";
+import { Comment, Avatar, Form, Button, List, Tooltip, Pagination, Input, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Editor } from '@toast-ui/react-editor';
 import "@toast-ui/editor/dist/toastui-editor.css";
 import "@toast-ui/editor/dist/i18n/zh-cn";
 import styles from "../css/Discuss.module.css"
 
-import { getIssueCommentById, addComment } from "../api/comment";
+import { getIssueCommentById, addComment, getBookCommentById } from "../api/comment";
 import { updateIssue } from "../api/issue";
-import { getUserById } from "../api/user";
+import { updateBook } from "../api/book";
+import { editUser, getUserById } from "../api/user";
 import { updateUserInfoAsync } from "../redux/userSlice";
 import { formatDate } from "../utils/tools";
 
@@ -18,6 +19,7 @@ import { formatDate } from "../utils/tools";
 export default function Discuss(props) {
     const { userInfo, isLogin } = useSelector((state) => state.user);
     const [commentList, setCommentList] = useState([]);
+    const [value, setValue] = useState("");
     const [refresh, setRefresh] = useState(false);
     const [pageInfo, setPageInfo] = useState({
         current: 1,
@@ -36,31 +38,42 @@ export default function Discuss(props) {
         });
     }
 
+    const handleCommentData = async res => {
+        const comment = res.data;
+        if (!comment.data) return;
+
+        const userIds = comment.data.map(item => item.userId);
+        const usersRes = await Promise.all(userIds.map(id => getUserById(id)));
+
+        const newCommentList = comment.data.map((item, index) => ({
+            ...item,
+            userInfo: usersRes[index].data
+        }));
+        setCommentList(newCommentList);
+        setPageInfo({
+            current: comment.currentPage,
+            pageSize: comment.eachPage,
+            total: comment.count,
+            totalPage: comment.totalPage
+        });
+    }
+
     useEffect(() => {
         async function fetchCommentList() {
+            let res;
             if (props.commentType === 1) {
-                const res = await getIssueCommentById(props.targetId, {
+                res = await getIssueCommentById(props.targetId, {
                     current: pageInfo.current,
                     pageSize: pageInfo.pageSize,
                 });
-                let comment = res.data;
-                if (comment.data) {
-                    let ids = comment.data.map(item => getUserById(item.userId));
-                    const users = await Promise.all(ids);
-                    const newCommentList = comment.data.map((item, index) => ({
-                        ...item,
-                        userInfo: users[index].data,
-                    }));
-                    setCommentList(newCommentList);
-                    setPageInfo({
-                        current: comment.currentPage,
-                        pageSize: comment.eachPage,
-                        total: comment.count,
-                        totalPage: comment.totalPage
-                    });
-                }
             } else if (props.commentType === 2) {
-
+                res = await getBookCommentById(props.targetId, {
+                    current: pageInfo.current,
+                    pageSize: pageInfo.pageSize,
+                });
+            }
+            if (res) {
+                await handleCommentData(res);
             }
         }
         if (props.targetId) {
@@ -72,7 +85,7 @@ export default function Discuss(props) {
     let avatar = null;
     if (isLogin) {
         avatar = (
-            <Avatar src={userInfo?.avatar} />
+            <Avatar src={userInfo?.avatar} alt="用户头像" />
         );
     } else {
         avatar = (
@@ -90,32 +103,54 @@ export default function Discuss(props) {
                 newComment = "";
             }
         } else if (props.commentType === 2) {
-            // 新增书籍评论
+            newComment = value;
         }
         if (!newComment) {
             message.warning("请输入评论内容");
             return;
-        }
-        addComment({
-            userId: userInfo._id,
-            typeId: props.issueInfo ? props.issueInfo.typeId : props.bookInfo.typeId,
-            commentContent: newComment,
-            commentType: props.commentType,
-            bookId: null,
-            issueId: props.targetId
-        });
-        message.success("评论成功");
-        setRefresh(!refresh);
-        editorRef.current.getInstance().setHTML("");
-        updateIssue(props.targetId, {
-            commentNumber: props.issueInfo ? ++props.issueInfo.commentNumber : ++props.booksInfo.commentNumber
-        });
-        dispathc(updateUserInfoAsync({
-            userId: userInfo._id,
-            newInfo: {
-                points: userInfo.points + 4
+        } else {
+            addComment({
+                userId: userInfo._id,
+                typeId: props.issueInfo ? props.issueInfo.typeId : props.bookInfo.typeId,
+                commentContent: newComment,
+                commentType: props.commentType,
+                bookId: props.bookInfo?._id,
+                issueId: props.issueInfo?._id
+            });
+
+            if (props.commentType === 1) {
+                updateIssue(props.issueInfo._id, {
+                    commentNumber: ++props.issueInfo.commentNumber
+                });
+                editUser(userInfo._id, {
+                    points: userInfo.points + 4
+                });
+                dispathc(updateUserInfoAsync({
+                    userId: userInfo._id,
+                    newInfo: {
+                        points: userInfo.points + 4
+                    }
+                }));
+                message.success("评论成功，积分+4");
+                editorRef.current.getInstance().setHTML("");
+            } else if(props.commentType === 2) {
+                updateBook(props.bookInfo._id, {
+                    commentNumber: ++props.bookInfo.commentNumber
+                });
+                editUser(userInfo._id, {
+                    points: userInfo.points + 2
+                });
+                dispathc(updateUserInfoAsync({
+                    userId: userInfo._id,
+                    newInfo: {
+                        points: userInfo.points + 2
+                    }
+                }));
+                message.success("评论成功，积分+2");
+                setValue("");
             }
-        }));
+            setRefresh(!refresh);
+        }
     }
 
     return (
@@ -126,15 +161,28 @@ export default function Discuss(props) {
                 content={
                     <>
                         <Form.Item>
-                            <Editor
-                                ref={editorRef}
-                                initialValue=""
-                                previewStyle="vertical"
-                                height="270px"
-                                useCommandShortcut={true}
-                                language="zh-CN"
-                                className="editor"
-                            />
+                            {
+                                props?.commentType === 1 ?
+                                    (
+                                        <Editor
+                                            ref={editorRef}
+                                            initialValue=""
+                                            previewStyle="vertical"
+                                            height="270px"
+                                            useCommandShortcut={true}
+                                            language="zh-CN"
+                                            className="editor"
+                                        />
+                                    ) : (
+                                        <Input.TextArea
+                                            rows={4}
+                                            placeholder={isLogin ? "" : "请登录后评论..."}
+                                            value={value}
+                                            onChange={e => setValue(e.target.value)}
+                                        />
+                                    )
+                            }
+
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" disabled={!isLogin} onClick={onSubmit}>添加评论</Button>

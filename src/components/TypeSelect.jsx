@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getTypeList, updateIssueTypeId } from "../redux/typeSlice";
+import { getTypeList, updateBookTypeId, updateIssueTypeId } from "../redux/typeSlice";
 
 import { Tag } from "antd";
 
@@ -46,7 +46,7 @@ export default function TypeSelect() {
         if (location.pathname === "/issues") {
             dispath(updateIssueTypeId(typeId));
         } else if (location.pathname === "/books") {
-
+            dispath(updateBookTypeId(typeId));
         }
     }
 

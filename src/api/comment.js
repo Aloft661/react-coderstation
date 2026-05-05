@@ -17,3 +17,12 @@ export function addComment(data) {
         data
     });
 }
+
+// 根据 bookId 获取该书籍对应的评论
+export function getBookCommentById(id, params) {
+    return request({
+        url: `/api/comment/bookcomment/${id}`,
+        method: "GET",
+        params,
+    });
+}

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import { Tag } from "antd";
+
 import { formatDate } from "../utils/tools";
 import { getTypeList } from "../redux/typeSlice";
-import { Tag } from "antd";
+import { updateIssue } from "../api/issue";
 import { getUserById } from "../api/user";
 
 import styles from "../css/IssueItem.module.css";
@@ -30,6 +33,13 @@ export default function IssueItem(props) {
 
     const type = typeList.find(itme => itme._id === props.issueInfo.typeId);
 
+    function handleClick() {
+        navigate(`/issue/${props.issueInfo._id}`);
+        updateIssue(props.issueInfo._id, {
+            scanNumber: ++props.issueInfo.scanNumber
+        });
+    }
+
     return (
         <div className={styles.container}>
             {/* 回答数 */}
@@ -44,7 +54,7 @@ export default function IssueItem(props) {
             </div>
             {/* 问题内容 */}
             <div className={styles.issueContainer}>
-                <div className={styles.top} onClick={() => navigate(`/issue/${props.issueInfo._id}`)}>{props.issueInfo.issueTitle}</div>
+                <div className={styles.top} onClick={() => handleClick()}>{props.issueInfo.issueTitle}</div>
                 <div className={styles.bottom}>
                     <div className={styles.left}>
                         <Tag color={colorArr[typeList.indexOf(type) % colorArr.length]}>{type?.typeName}</Tag>

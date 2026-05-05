@@ -3,10 +3,11 @@ import { useRoutes, Navigate } from "react-router-dom";
 import { Spin } from "antd";
 
 const Issues = lazy(() => import("../pages/Issues"));
-const Books = lazy(() => import("../pages/Books"));
-const Interviews = lazy(() => import("../pages/Interviews"));
 const AddIssue = lazy(() => import("../pages/AddIssue"));
 const IssueDetail = lazy(() => import("../pages/IssueDetail"));
+const Books = lazy(() => import("../pages/Books"));
+const BookDetail = lazy(() => import("../pages/BookDetail"));
+const Interviews = lazy(() => import("../pages/Interviews"));
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 
 const routes = [
@@ -29,6 +30,10 @@ const routes = [
     {
         path: "/books",
         element: <Books />
+    },
+    {
+        path: "/books/:id",
+        element: <BookDetail />
     },
     {
         path: "/interviews",

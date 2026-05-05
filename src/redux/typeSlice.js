@@ -17,8 +17,11 @@ const typeSlice = createSlice({
         bookTypeId: "all"
     },
     reducers: {
-        updateIssueTypeId: (state, {payload}) => {
+        updateIssueTypeId: (state, { payload }) => {
             state.issueTypeId = payload;
+        },
+        updateBookTypeId: (state, { payload }) => {
+            state.bookTypeId = payload;
         }
     },
     extraReducers: (builder) => {   
@@ -28,5 +31,5 @@ const typeSlice = createSlice({
     }
 });
 
-export const { updateIssueTypeId } = typeSlice.actions;
+export const { updateIssueTypeId, updateBookTypeId } = typeSlice.actions;
 export default typeSlice.reducer;

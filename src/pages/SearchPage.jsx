@@ -6,8 +6,10 @@ import AddIssueBtn from "../components/AddIssueBtn";
 import Recommend from "../components/Recommend";
 import ScoreRank from "../components/ScoreRank";
 import SearchResultItem from "../components/SearchResultItem";
+import { Pagination } from "antd";
 
 import { getIssueByPage } from "../api/issue";
+import { getBookByPage } from "../api/book";
 
 import styles from "../css/SearchPage.module.css";
 
@@ -38,10 +40,18 @@ export default function SearchPage() {
                         current: data.currentPage,
                         pageSize: data.eachPage,
                         total: data.count
-                    })
+                    });
                     break;
                 }
                 case "book": {
+                    searchParams.bookTitle = value;
+                    const { data } = await getBookByPage(searchParams);
+                    setSearchResult(data.data);
+                    setPageInfo({
+                        current: data.currentPage,
+                        pageSize: data.eachPage,
+                        total: data.count
+                    });
                     break;
                 }
             }
@@ -49,7 +59,14 @@ export default function SearchPage() {
         if (location.state) {
             fetchData(location.state);
         }
-    }, [location.state]);
+    }, [location.state, pageInfo.current, pageInfo.pageSize]);
+
+    function handlePageChange(current, pageSize) {
+        setPageInfo({
+            current,
+            pageSize
+        });
+    }
 
     return (
         <div className="container">
@@ -60,6 +77,13 @@ export default function SearchPage() {
                         searchResult.map(item => {
                             return <SearchResultItem info={item} key={item._id} />
                         })
+                    }
+                    {
+                        searchResult.length > 0 ? (
+                            <div className="paginationContainer">
+                                <Pagination showQuickJumper defaultCurrent={1} {...pageInfo} onChange={handlePageChange} />
+                            </div>
+                        ) : <div className={styles.noResult}>未搜索到符合条件的条目</div>
                     }
                 </div>
                 <div className={styles.rightSide}>
