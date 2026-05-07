@@ -9,6 +9,7 @@ const Books = lazy(() => import("../pages/Books"));
 const BookDetail = lazy(() => import("../pages/BookDetail"));
 const Interviews = lazy(() => import("../pages/Interviews"));
 const SearchPage = lazy(() => import("../pages/SearchPage"));
+const Personal = lazy(() => import("../pages/Personal"));
 
 const routes = [
     {
@@ -42,6 +43,10 @@ const routes = [
     {
         path: "/searchPage",
         element: <SearchPage />
+    },
+    {
+        path: "/personal",
+        element: <Personal />
     }
 ];
 
