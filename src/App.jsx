@@ -8,7 +8,7 @@ import { changeLoginStatus, initUserInfo } from "./redux/userSlice";
 import { useDispatch } from "react-redux";
 import { message } from "antd";
 
-import RouterConfig from "./router";
+import RouterBefore from "./router/RouteBefore";
 import LoginForm from "./components/LoginForm";
 
 const { Header, Footer, Content } = Layout;
@@ -55,7 +55,7 @@ function App() {
                 <NavHeader loginHandle={loginHandle} />
             </Header>
             <Content className="content">
-                <RouterConfig />
+                <RouterBefore />
             </Content>
             <Footer className="footer">
                 <PageFoot />
