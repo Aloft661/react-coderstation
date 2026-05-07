@@ -14,6 +14,7 @@ export default function LoginAvatar(props) {
 
     function listClickHandle(item) {
         if (item === "个人中心") {
+            navigate("/personal");
         } else {
             localStorage.removeItem("userToken");
             dispatch(clearUserInfo());

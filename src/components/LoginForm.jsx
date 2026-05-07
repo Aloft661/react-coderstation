@@ -66,34 +66,38 @@ export default function LoginForm(props) {
             return;
         }
 
-        const res = await userLogin(loginInfo);
-        if (res.data) {
-            const data = res.data;
-            if (!data.data) {
-                message.warning("账号或密码错误");
-                captchaClickHandle();
-            } else if (!data.data.enabled) {
-                message.warning("账号已被禁用");
-                captchaClickHandle();
-            } else {
-                message.success("登录成功");
-                if (loginInfo.remember) {
-                    localStorage.setItem(rememberedLoginInfoKey, JSON.stringify({
-                        loginId: loginInfo.loginId,
-                        loginPwd: loginInfo.loginPwd,
-                    }));
+        try {
+            const res = await userLogin(loginInfo);
+            if (res.data) {
+                const data = res.data;
+                if (!data.data) {
+                    message.warning("账号或密码错误");
+                    captchaClickHandle();
+                } else if (!data.data.enabled) {
+                    message.warning("账号已被禁用");
+                    captchaClickHandle();
                 } else {
-                    localStorage.removeItem(rememberedLoginInfoKey);
+                    message.success("登录成功");
+                    if (loginInfo.remember) {
+                        localStorage.setItem(rememberedLoginInfoKey, JSON.stringify({
+                            loginId: loginInfo.loginId,
+                            loginPwd: loginInfo.loginPwd,
+                        }));
+                    } else {
+                        localStorage.removeItem(rememberedLoginInfoKey);
+                    }
+                    localStorage.setItem("userToken", data.token);
+                    const user = await getUserById(data.data._id);
+                    dispatch(initUserInfo(user.data));
+                    dispatch(changeLoginStatus(true));
+                    handleCancel();
                 }
-                localStorage.setItem("userToken", data.token);
-                const user = await getUserById(data.data._id);
-                dispatch(initUserInfo(user.data));
-                dispatch(changeLoginStatus(true));
-                handleCancel();
+            } else {
+                message.warning(res.msg);
+                captchaClickHandle();
             }
-        } else {
-            message.warning(res.msg);
-            captchaClickHandle();
+        } catch (error) {
+            handleSubmitError(error, setLoginErrors);
         }
     }
 
@@ -124,22 +128,39 @@ export default function LoginForm(props) {
             return;
         }
 
-        const res = await addUser(registerInfo);
-        if (res.data) {
-            message.success("注册成功");
-            localStorage.setItem("userToken", res.data.token);
-            dispatch(initUserInfo(res.data));
-            dispatch(changeLoginStatus(true));
-            handleCancel();
-        } else {
-            message.warning(res.msg);
-            captchaClickHandle();
+        try {
+            const res = await addUser(registerInfo);
+            if (res.data) {
+                message.success("注册成功");
+                localStorage.setItem("userToken", res.data.token);
+                dispatch(initUserInfo(res.data));
+                dispatch(changeLoginStatus(true));
+                handleCancel();
+            } else {
+                message.warning(res.msg);
+                captchaClickHandle();
+            }
+        } catch (error) {
+            handleSubmitError(error, setRegisterErrors);
         }
     }
     // 刷新验证码
     async function captchaClickHandle() {
         const res = await getCaptcha();
         setCaptcha(res);
+    }
+
+    function handleSubmitError(error, setErrors) {
+        const errorMsg = error?.response?.data?.msg || error?.message || "操作失败";
+        if (errorMsg.includes("验证码")) {
+            setErrors((oldErrors) => ({
+                ...oldErrors,
+                captcha: errorMsg,
+            }));
+        } else {
+            message.warning(errorMsg);
+        }
+        captchaClickHandle();
     }
 
     /**
