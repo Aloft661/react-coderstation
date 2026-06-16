@@ -14,7 +14,8 @@ const typeSlice = createSlice({
     initialState: {
         typeList: [],
         issueTypeId: "all",
-        bookTypeId: "all"
+        bookTypeId: "all",
+        videoTypeId: "all"
     },
     reducers: {
         updateIssueTypeId: (state, { payload }) => {
@@ -22,6 +23,9 @@ const typeSlice = createSlice({
         },
         updateBookTypeId: (state, { payload }) => {
             state.bookTypeId = payload;
+        },
+        updateVideoTypeId: (state, { payload }) => {
+            state.videoTypeId = payload;
         }
     },
     extraReducers: (builder) => {   
@@ -31,5 +35,5 @@ const typeSlice = createSlice({
     }
 });
 
-export const { updateIssueTypeId, updateBookTypeId } = typeSlice.actions;
+export const { updateIssueTypeId, updateBookTypeId, updateVideoTypeId } = typeSlice.actions;
 export default typeSlice.reducer;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getTypeList, updateBookTypeId, updateIssueTypeId } from "../redux/typeSlice";
+import { getTypeList, updateBookTypeId, updateIssueTypeId, updateVideoTypeId } from "../redux/typeSlice";
 
 import { Tag } from "antd";
 
@@ -47,6 +47,8 @@ export default function TypeSelect() {
             dispath(updateIssueTypeId(typeId));
         } else if (location.pathname === "/books") {
             dispath(updateBookTypeId(typeId));
+        } else if (location.pathname === "/video") {
+            dispath(updateVideoTypeId(typeId));
         }
     }
 

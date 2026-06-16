@@ -39,14 +39,15 @@ export default function NavHeader(props) {
                 <NavLink to="/" className="navigation">问答</NavLink>
                 <NavLink to="/books" className="navigation">书籍</NavLink>
                 <NavLink to="/interviews" className="navigation">面试题</NavLink>
-                <a
+                <NavLink to="/video" className="navigation">视频教程</NavLink>
+                {/* <a
                     href="http://www.bilibili.com"
                     className="navigation"
                     target="_blank"
                     rel="noreferrer"
                 >
                     视频教程
-                </a>
+                </a> */}
             </nav>
             {/* 搜索栏 */}
             <div className="searchContainer">

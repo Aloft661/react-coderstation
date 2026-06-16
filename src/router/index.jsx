@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { useRoutes, Navigate } from "react-router-dom";
 import { Spin } from "antd";
+import { element } from "prop-types";
 
 const Issues = lazy(() => import("../pages/Issues"));
 const AddIssue = lazy(() => import("../pages/AddIssue"));
@@ -10,6 +11,7 @@ const BookDetail = lazy(() => import("../pages/BookDetail"));
 const Interviews = lazy(() => import("../pages/Interviews"));
 const SearchPage = lazy(() => import("../pages/SearchPage"));
 const Personal = lazy(() => import("../pages/Personal"));
+const Video = lazy(() => import("../pages/Video"));
 
 const routes = [
     {
@@ -47,6 +49,10 @@ const routes = [
     {
         path: "/personal",
         element: <Personal />
+    },
+    {
+        path: "/video",
+        element: <Video />
     }
 ];
 
