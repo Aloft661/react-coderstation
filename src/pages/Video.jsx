@@ -28,7 +28,7 @@ export default function Video() {
                 current: pageInfo.current,
                 pageSize: pageInfo.pageSize
             };
-            if (videoTypeId === "all") {
+            if (videoTypeId !== "all") {
                 searchParams.typeId = videoTypeId;
                 searchParams.current = 1;
             }
@@ -54,6 +54,19 @@ export default function Video() {
                         width: 200,
                         marginBottom: 30
                     }}
+                    cover={
+                        <img
+                            alt="example"
+                            style={{
+                                width: 160,
+                                height: 200,
+                                margin: "auto",
+                                marginTop: 10
+                            }}
+                            src={videoInfo[i]?.videoPic}
+                        />
+                    }
+                    onClick={() => navigate(`/video/${videoInfo[i]._id}`)}
                     key={videoInfo[i]._id}
                 >
                     <Meta title={videoInfo[i]?.videoTitle} />
